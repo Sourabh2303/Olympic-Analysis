@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def fetch_medal_tally(df, year, country):
     medal_df = df.drop_duplicates(
@@ -93,9 +94,24 @@ def yearwise_medal_tally(df, country):
 
 def country_event_heatmap(df, country):
     temp_df = df.dropna(subset=['Medal'])
-    temp_df = temp_df.drop_duplicates(['Team', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'])
+    temp_df = temp_df.drop_duplicates(
+        subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal']
+    )
+
     new_df = temp_df[temp_df['region'] == country]
-    pt = new_df.pivot_table(index='Sport', columns='Year', values='Medal', aggfunc='count').fillna(0)
+
+    if new_df.empty:
+        return pd.DataFrame()  # return empty safely
+
+    pt = new_df.pivot_table(
+        index='Sport',
+        columns='Year',
+        values='Medal',
+        aggfunc='count',
+        fill_value=0,
+        observed=False  # avoid pandas FutureWarning
+    )
+
     return pt
 
 

@@ -135,9 +135,12 @@ elif user_menu == 'Country-wise Analysis':
 
     st.subheader(f"{selected_country} Excels in These Sports")
     pt = helper.country_event_heatmap(df, selected_country)
-    fig, ax = plt.subplots(figsize=(25, 25))
-    sns.heatmap(pt, annot=True, cmap="YlOrRd", fmt="d", ax=ax)
-    st.pyplot(fig)
+    if pt.empty:
+        st.warning(f"No medal records available for {selected_country}.")
+    else:
+        fig, ax = plt.subplots(figsize=(12, 8))
+        sns.heatmap(pt, annot=True, fmt="g", cmap="YlGnBu")
+        st.pyplot(fig)
 
     st.subheader(f"Top 10 Athletes of {selected_country}")
     top10_df = helper.most_successfull_countrywise(df, selected_country)
